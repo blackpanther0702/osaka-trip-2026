@@ -1820,7 +1820,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       if (models[k].t1 != null) t1 = Math.max(t1, models[k].t1);
     });
     var ok = !!rt && isFinite(t0) && t1 > t0;
-    if (ok) route = { models: models, order: order, active: order[0], t0: t0, t1: t1 };
+    if (ok) route = { models: models, order: order, active: order[0], t0: t0, t1: t1, rt: rt };
 
     var seg = (order.length > 1)
       ? '<div class="seg" role="group" aria-label="切換地圖">' +
@@ -1876,7 +1876,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     var cur = m.pts[st.j];
     ui.act.textContent = st.moving
       ? '前往 ' + shortName(st.moving.to) + '（' + st.moving.mode + '）'
-      : (VERB[cur.s.cat] || '') + '｜' + shortName(cur.s);
+      : (pb.stampNav && !cur.s.done ? '下一站' : (VERB[cur.s.cat] || '')) + '｜' + shortName(cur.s);
     m.legs.forEach(function (lg, k) {
       var f = lg.t1 > lg.t0 ? Math.max(0, Math.min(1, (T - lg.t0) / (lg.t1 - lg.t0))) : (T >= lg.t1 ? 1 : 0);
       var p = el.prog[k]; if (!p) return;
@@ -1896,7 +1896,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     if (!st.moving && cur.g !== m.lastCur) {
       m.lastCur = cur.g;
       var mk2 = el.marks[cur.g.gi];
-      if (mk2 && pb.playing && !reduce) {
+      if (mk2 && (pb.playing || pb.stampRun) && !reduce) {
         mk2.classList.remove('arrive'); void mk2.getBoundingClientRect(); mk2.classList.add('arrive');
         setTimeout(function () { mk2.classList.remove('arrive'); }, 700);
       }
@@ -1912,8 +1912,49 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     ui.range.style.setProperty('--pct', Math.max(0, Math.min(100, pct)).toFixed(1) + '%');
   }
 
+  function pbMode() {
+    if (route) route.order.forEach(function (k) { var e = route.models[k].el; if (e && e.svg) e.svg.classList.add('pbmode'); });
+  }
+  function clampT(t) { return Math.max(route.t0, Math.min(route.t1, t)); }
+
+  /* ── 蓋印後自動走到下一站（不用按播放） ── */
+  function stampMove(k, done) {
+    if (!route || !route.ui || !route.rt) return;
+    var t = route.rt.t;
+    pbSetPlaying(false);
+    pb.stampNav = true;
+    pbMode();
+    if (!done || k + 1 >= t.length) { pb.T = clampT(t[k]); pbUpdate(); followToken(); return; }
+    var to = clampT(t[k + 1]), from = clampT(t[k]);
+    /* 從「出發」那一刻開始走，不在原地空等停留時間 */
+    var m = route.models[route.active], dep = to;
+    m.legs.forEach(function (lg) { if (lg.t1 > from && lg.t1 <= to) dep = Math.min(dep, lg.t0); });
+    from = Math.max(from, dep);
+    if (reduce || to <= from) { pb.T = to; pbUpdate(); followToken(); return; }
+    var dur = 1800, start = 0;
+    pb.stampRun = true;
+    pb.raf = requestAnimationFrame(function step(ts) {
+      if (!route || !pb.stampRun) return;
+      if (!start) start = ts;
+      var f = Math.min(1, (ts - start) / dur);
+      pb.T = from + (to - from) * f;
+      pbUpdate();
+      if (f < 1) pb.raf = requestAnimationFrame(step);
+      else { pb.stampRun = false; followToken(); }
+    });
+  }
+
+  /* 旅人走出畫面時，地圖跟過去 */
+  function followToken() {
+    var lm = route && lmaps[route.active];
+    if (!lm || !lm.el.offsetWidth) return;
+    var ll = lm.tok.getLatLng();
+    if (!lm.map.getBounds().pad(-0.1).contains(ll)) lm.map.panTo(ll);
+  }
+
   function pbSetPlaying(on) {
-    pb.playing = on; pb.last = 0;
+    pb.playing = on; pb.last = 0; pb.stampRun = false;
+    if (on) pb.stampNav = false;
     cancelAnimationFrame(pb.raf);
     var ui = route && route.ui;
     if (ui) {
@@ -1957,7 +1998,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
         : { svg: svg, tok: $('.rm-tok', svg), tint: $('.rm-tint', svg), marks: $$('.rm-mk', svg), prog: $$('.rm-prog', svg) };
     });
     route.ui = ui;
-    pb.T = route.t0;
+    pb.T = route.t0; pb.stampNav = false;
+    /* 有蓋過印：旅人直接站在「最後蓋印的下一站」 */
+    var dd = data.days[state.day], last = -1;
+    if (dd) dd.stops.forEach(function (s, i) { if (s.done) last = i; });
+    if (last >= 0 && route.rt) {
+      pb.T = clampT(route.rt.t[Math.min(last + 1, route.rt.t.length - 1)]);
+      pb.stampNav = true;
+      pbMode();
+    }
     ui.play.addEventListener('click', function () {
       if (pb.playing) { pbSetPlaying(false); return; }
       if (pb.T >= route.t1) pb.T = route.t0;
@@ -1969,7 +2018,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     });
     ui.range.addEventListener('input', function () {
       pbSetPlaying(false);
-      route.order.forEach(function (k) { route.models[k].el.svg.classList.add('pbmode'); });
+      pb.stampNav = false;
+      pbMode();
       pb.T = Number(ui.range.value);
       pbUpdate();
     });
@@ -2360,6 +2410,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       b.setAttribute('aria-pressed', String(s.done));
       b.innerHTML = s.done ? stampInner(s, true) : '<span class="empty-st">蓋印</span>';
       updateDayCount(); refreshMapDone(); persist();
+      stampMove(stopIndex(d, s.id), s.done);
       if (s.done) { try { if (navigator.vibrate) navigator.vibrate(18); } catch (er) { /* 忽略 */ } }
       return;
     }
