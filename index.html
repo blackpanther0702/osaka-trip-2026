@@ -40,6 +40,8 @@
 const TRIP = {
   id: "osaka-2026-11-d",
   rev: 1,
+  dv: 4,   /* 行程版本：改了 days 的內容就加 1，瀏覽器裡舊的行程會換成新的 */
+  clv: 2,  /* 檢查清單版本：改了 checklist 就加 1，瀏覽器裡舊的清單會換成新的 */
   title: "大阪五天四夜",
   range: "11/4（三）～11/8（日）",
   start: "2026-11-04",
@@ -70,18 +72,19 @@ const TRIP = {
         { t: "約12:30", name: "午餐：大阪うな和 本店 心斎橋", short: "うな和", ll: [34.6735, 135.5047], stamp: "鰻魚", q: "大阪うな和 本店 心斎橋", cat: "food",
           tags: ["!需預約"], stay: "約1小時", move: "步行約5分",
           note: "東心斎橋1-19-15\n心斎橋站6號出口步行約2分" },
-        { t: "13:35", name: "御堂筋 LV、Miu Miu", short: "LV", ll: [34.6733, 135.5005], q: "ルイ・ヴィトン 大阪心斎橋店", cat: "shop", stay: "約1小時15分", move: "步行約5分", note: "逛完直接去寶可夢，寶可夢和 Chiikawa 的時間跟著提早或延後" },
-        { t: "14:55", name: "Pokémon Center OSAKA DX", short: "寶可夢 DX", ll: [34.6741, 135.5014], stamp: "寶可夢", q: "ポケモンセンターオーサカDX 大丸心斎橋", cat: "shop",
+        { t: "下午", name: "御堂筋 LV、Miu Miu", short: "LV", ll: [34.6733, 135.5005], q: "ルイ・ヴィトン 大阪心斎橋店", cat: "shop", move: "步行約5分", note: "逛完直接去寶可夢（16:00）" },
+        { t: "16:00", name: "Pokémon Center OSAKA DX", short: "寶可夢 DX", ll: [34.6741, 135.5014], stamp: "寶可夢", q: "ポケモンセンターオーサカDX 大丸心斎橋", cat: "shop",
           stay: "約1小時", move: "步行約5分", note: "大丸心齋橋本館 9F" },
-        { t: "16:00", name: "Chiikawa（心齋橋 PARCO 6F）", short: "Chiikawa", ll: [34.6732, 135.5013], stamp: "吉伊卡哇", q: "心斎橋PARCO", cat: "shop",
+        { t: "17:10", name: "Chiikawa（心齋橋 PARCO 6F）", short: "Chiikawa", ll: [34.6732, 135.5013], stamp: "吉伊卡哇", q: "心斎橋PARCO", cat: "shop",
           stay: "約40分", move: "步行約3～5分",
           note: "心齋橋筋1丁目8-3\n心齋橋站直結；不領整理券，直接排隊進場" },
-        { t: "16:45", name: "心齋橋筋商店街＋附近自由逛", short: "商店街", ll: [34.6715, 135.5013], q: "心斎橋筋商店街", cat: "shop", stay: "到 19:05 左右", move: "步行約5～10分", note: "UNIQLO、GU，其他想逛的現場決定"+"\n"+"19:05 前往道頓堀" },
-        { t: "19:15", name: "抵達道頓堀，拍巨大螃蟹招牌", short: "道頓堀", ll: [34.6688, 135.5018], stamp: "道頓堀", q: "かに道楽 道頓堀本店", cat: "sight",
-          move: "步行約10分（沿商店街往南）" },
-        { t: "19:30", name: "蟹道樂 道頓堀本店", short: "蟹道樂", ll: [34.6688, 135.5029], q: "かに道楽 道頓堀本店", cat: "food",
-          tags: ["已預約 2 位"], stay: "約1.5小時" },
-        { t: "21:00", name: "Rewit 心齋橋", short: "Rewit", ll: [34.6718, 135.5012], q: "Rewit 心齋橋", cat: "hotel", move: "步行約10～15分" }
+        { t: "17:55", name: "心齋橋筋商店街 UNIQLO、GU", short: "商店街", ll: [34.6715, 135.5013], q: "心斎橋筋商店街", cat: "shop", stay: "約1小時30分", move: "步行約5～10分" },
+        { t: "19:45", name: "抵達道頓堀東側，拍招牌", short: "道頓堀", ll: [34.6686, 135.5040], stamp: "道頓堀", q: "かに道楽 道頓堀東店", cat: "sight",
+          move: "步行約15分（往東經戎橋到道頓堀東側；我沒驗證）" },
+        { t: "20:00", name: "蟹道樂 道頓堀東店", short: "蟹道樂", ll: [34.6686, 135.5045], q: "かに道楽 道頓堀東店", cat: "food",
+          tags: ["已預約 2 位"], stay: "約1.5小時",
+          note: "道頓堀1-1-3\n千日前線日本橋站步行約3分\n私人廂房為備註要求，不保證" },
+        { t: "21:50", name: "Rewit 心齋橋", short: "Rewit", ll: [34.6718, 135.5012], q: "Rewit 心齋橋", cat: "hotel", move: "步行約15～20分" }
       ]
     },
     {
@@ -98,20 +101,20 @@ const TRIP = {
         { t: "08:00", name: "淀屋橋站", short: "淀屋橋", ll: [34.6921, 135.5014], q: "淀屋橋駅", cat: "move",
           move: "步行約5分至心齋橋站\n→ 御堂筋線 約5分 ¥190" },
         { t: "08:50", name: "祇園四条站", short: "祇園四条", ll: [35.0039, 135.7716], q: "祇園四条駅", cat: "move",
-          move: "京阪特急 約50分 ¥430（祇園四条下車，特急不停清水五条）" },
+          move: "京阪特急 約50分 ¥430（祇園四条下車，不用換車）" },
         { t: "09:30", name: "璃光和服體驗館 清水本店", short: "璃光", ll: [34.9982, 135.7817], q: "璃光着物レンタル 清水本店 京都市東山区桝屋町351-16", cat: "sight",
-          tags: ["!確認時間"], move: "從 1 號出口步行約15分，約 09:05 到店\n時間太晚就搭計程車：約5分（二年坂巷子窄，可能在八坂之塔或東大路通下車再走幾分鐘）", note: "東山區桝屋町351-16（二年坂）\n電話 080-6172-6942\n租借、著裝、髮型\n出發前確認著裝完成時間、13:00 還衣" },
+          tags: ["!確認時間"], move: "從 1 號出口步行約15～20分（緩上坡），約 09:10 到店\n時間太晚就搭計程車：約5分（二年坂巷子窄，可能在八坂之塔或東大路通下車再走幾分鐘）", note: "東山區桝屋町351-16（二年坂）\n電話 080-6172-6942\n租借、著裝、髮型\n出發前確認著裝完成時間、13:00 還衣" },
         { t: "10:30", name: "清水寺參拜", short: "清水寺", ll: [34.9949, 135.7850], q: "清水寺", cat: "sight",
           stay: "約45分", move: "步行上坡約10～15分", note: "門票 ¥500" },
         { t: "11:30", name: "戶外和服攝影（到 12:15）", short: "和服攝影", ll: [34.9982, 135.7817], stamp: "和服攝影", q: "璃光着物レンタル 清水本店 京都市東山区桝屋町351-16", cat: "sight",
-          move: "步行下坡約10～15分，回到璃光清水本店", note: "在璃光清水本店集合" },
-        { t: "12:30", name: "璃光｜換回衣服", short: "璃光", ll: [34.9982, 135.7817], q: "璃光着物レンタル 清水本店 京都市東山区桝屋町351-16", cat: "sight", move: "攝影結束回到店裡" },
+          move: "步行下坡，回到攝影集合地點" },
+        { t: "12:30", name: "璃光｜換回衣服", short: "璃光", ll: [34.9982, 135.7817], q: "璃光着物レンタル 清水本店 京都市東山区桝屋町351-16", cat: "sight", move: "步行約10分" },
         { t: "13:00", name: "歸還和服", short: "璃光", ll: [34.9982, 135.7817], q: "璃光着物レンタル 清水本店 京都市東山区桝屋町351-16", cat: "sight" },
-        { t: "13:05", name: "午餐：ichiren KYOTO", short: "ichiren", ll: [34.9986, 135.7804], stamp: "午餐", q: "ichiren KYOTO 京都市東山区桝屋町349-20", cat: "food",
-          tags: ["!現場取號"], stay: "約1小時", move: "步行約3分（同在二年坂）",
+        { t: "13:25", name: "午餐：ichiren KYOTO", short: "ichiren", ll: [34.9986, 135.7804], stamp: "午餐", q: "ichiren KYOTO 京都市東山区桝屋町349-20", cat: "food",
+          tags: ["!現場取號"], stay: "約1小時", move: "步行上坡約20分（清水坂 → 三年坂 → 二年坂）",
           note: "東山區桝屋町349-20（二年坂北端附近）\nGoogle 地圖：https://share.google/PLWE1NLzPfOTd9M0r\n備案：波ぎ茶寮〔蕎麥麵〕\n點餐時確認湯底與配料不含牛" },
-        { t: "14:10", name: "二年坂 → 三年坂", short: "二三年坂", ll: [34.9975, 135.7810], stamp: "二年坂", q: "二年坂", cat: "shop",
-          stay: "約1小時15分", move: "步行約5分", note: "逛街、拍照、買伴手禮" },
+        { t: "14:30", name: "二年坂 → 三年坂", short: "二三年坂", ll: [34.9975, 135.7810], stamp: "二年坂", q: "二年坂", cat: "shop",
+          stay: "約1小時", move: "步行約5分", note: "逛街、拍照、買伴手禮" },
         { t: "15:30", name: "GOKAGO｜抹茶拿鐵＋冰淇淋", short: "GOKAGO", ll: [34.9957, 135.7811], stamp: "抹茶", q: "GOKAGO 京都市東山区清水2-258", cat: "food",
           stay: "含排隊約35分", move: "步行約5分", note: "東山區清水2-258" },
         { t: "16:10", name: "清水坂、五條坂沿路", short: "清水坂", ll: [34.9955, 135.7808], stamp: "清水坂", q: "清水坂", cat: "shop",
@@ -201,7 +204,7 @@ const TRIP = {
         { t: "15:10", name: "冰凍激光乘車遊", short: "冰凍激光", pk: [39.2, 19], stamp: "冰凍激光", q: "ユニバーサル・スタジオ・ジャパン フリーズ・レイ・スライダー", cat: "ride",
           move: "園內步行約3分", note: "室外，11月偏冷" },
         { t: "15:30", name: "名偵探柯南4D表演秀", short: "柯南4D", pk: [19.6, 55.8], q: "ユニバーサル・スタジオ・ジャパン 名探偵コナン 4-D", cat: "ride",
-          move: "園內步行約5～10分", note: "帶3D眼鏡" },
+          move: "園內步行約5～10分" },
         { t: "16:00", name: "太空幻想列車", short: "太空幻想", pk: [19.4, 46.3], stamp: "太空幻想", q: "ユニバーサル・スタジオ・ジャパン スペース・ファンタジー・ザ・ライド", cat: "ride",
           tags: ["SR"], move: "園內步行約5～10分", note: "存包" },
         { t: "16:40", name: "美夢乘車遊", short: "美夢", pk: [35.2, 62.5], stamp: "美夢", q: "ユニバーサル・スタジオ・ジャパン ハリウッド・ドリーム・ザ・ライド", cat: "ride",
@@ -279,7 +282,7 @@ const TRIP = {
       "ICOCA 或手機 Suica 設定好"
     ]},
     { title: "電子與網路", items: [
-      "手機與充電線", "行動電源", "eSIM／網卡", "USJ 官方 App 下載並綁好票券"
+      "手機與充電線", "行動電源", "eSIM／網卡"
     ]},
     { title: "衣物與雨具", items: [
       "保暖外套（11月偏冷，USJ 與京都早晚更涼）", "雨衣（侏羅紀公園乘船遊）",
@@ -287,36 +290,6 @@ const TRIP = {
     ]},
     { title: "購物與行李", items: [
       "備用行李袋／購物袋", "護照隨身（購物退稅用）", "收據留好（機場退稅查驗）"
-    ]},
-    { title: "出發前待辦", items: [
-      { t: "蟹道樂 道頓堀本店｜11/4 19:30｜2 位（已預約）", done: true },
-      "預約大阪うな和 本店 心斎橋（Google 訂位、Tabelog 線上預約，或電話 06-6244-2233），確認營業時間",
-      "預約 New Babe Kyoto 11/5 19:00（Google 訂位）",
-      "New Babe：晚餐預約只收到19:00前，19:00 已是最晚；只訂位每人桌費 ¥220；可刷 Visa／Master／銀聯",
-      "New Babe：預約或到店時確認豬排套餐不含牛（特別是炸肉餅）",
-      "預約 Tsukada KITTE 大阪店 11/7 20:00，2 位（Google 訂位、一休或電話 06-6867-9479；取消費 100%，不要隨便取消）",
-      "Tsukada：預約和點餐時註明不吃牛、含牛油，確認有沒有黑豬壽喜燒、牛脂能不能換",
-      "向璃光和服體驗館 清水本店確認：著裝完成時間、13:00 還衣（戶外攝影在清水本店集合）",
-      "確認 ichiren KYOTO 11/5（週四）的營業與打烊時間、取號方式；點餐時確認不含牛；備案波ぎ茶寮",
-      "確認 GOKAGO 11/5 營業時間，並用 Google 地圖核對它和 ichiren 之間的步行時間",
-      "確認清水坂 → SUINA室町的計程車時間與車資（或市巴士路線）；傍晚旺季叫車要提早",
-      "確認 Pokémon Center 京都營業時間與是否有入場規制或整理券",
-      "確認 LAQUE 四条烏丸 11/5 營業時間",
-      "確認心齋橋 PARCO 6F 的 Chiikawa 目前是常設店、期間限定店還是咖啡廳，以及營業時間與是否需預約",
-      "確認阪急烏丸→梅田的車資與末班時間",
-      "11/4、11/5、11/7 前看一次三間寶可夢中心的店員公告（心齋橋 DX、京都、梅田），確認有沒有入場規制或整理券",
-      "確認 HEP FIVE 摩天輪是否營運（官網）",
-      "確認 11/6 USJ 開閉園時間、購票",
-      "前一晚與當天早上，再看一次 USJ App：任天堂世界整理券、設施整理券",
-      "確認 11/6 水世界、柯南4D、小小兵、冰凍激光等有無營運；路易紐約披薩餅舖當天有無營業，並確認餅皮、配料不含牛",
-      "決定 USJ 晚餐的店（避開牛）",
-      "查勝尾寺公車時刻表",
-      "確認 Pokémon Center 心齋橋 DX、梅田與 Alpen OSAKA 的營業時間",
-      "（選擇性）預約 Pokémon Cafe 大阪店（心齋橋大丸 9F）",
-      "（選擇性）領 KKday Alpen 外國旅客優惠券（再享95折）",
-      "確認電子機票上的航廈與起飛時間",
-      "退稅新制：購物先付含稅價，機場查驗後退款",
-      "寶可夢、Chiikawa、HEP FIVE 與 Alpen 消費也可退稅，收據一併留給機場查驗"
     ]}
   ]
 };
@@ -988,6 +961,8 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
     var old = loadOld();
     return {
       rev: TRIP.rev || 0,
+      dv: TRIP.dv || 0,
+      clv: TRIP.clv || 0,
       days: (Array.isArray(TRIP.days) ? TRIP.days : []).map(cleanDay),
       checklist: (Array.isArray(TRIP.checklist) ? TRIP.checklist : []).map(function (g, gi) { return cleanGroup(g, gi, old); })
     };
@@ -1034,12 +1009,19 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
       if (raw) {
         var o = JSON.parse(raw);
         if (o && Array.isArray(o.days) && Array.isArray(o.checklist)) {
-          var days = o.days.map(cleanDay);
-          upgradeDays(days, Number(o.rev) || 0);
+          var days;
+          if ((Number(o.dv) || 0) === (TRIP.dv || 0)) {
+            days = o.days.map(cleanDay);
+            upgradeDays(days, Number(o.rev) || 0);
+          } else days = baseData().days;
           return {
             rev: TRIP.rev || 0,
+            dv: TRIP.dv || 0,
+            clv: TRIP.clv || 0,
             days: days,
-            checklist: o.checklist.map(function (g) { return cleanGroup(g, 0, null); })
+            checklist: (Number(o.clv) || 0) === (TRIP.clv || 0)
+              ? o.checklist.map(function (g) { return cleanGroup(g, 0, null); })
+              : baseData().checklist
           };
         }
       }
